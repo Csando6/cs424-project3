@@ -5,13 +5,12 @@ from os import path
 #file = open(filename)
 
 #if your file is within LIST_files
-filepath = path.relpath("LIST_files/movies.list")
-file = open(filepath)
+filepath = path.relpath("LIST_files/release-dates.list")
+with open(filepath) as file:
 
-i = 0
-for line in file:
-    print(line)
-    i += 1
-    if (i > 25):
-        break
+    #get first few lines to start out:
+    i = 0
+    while i < 25:
+        print(file.readline())
+        i += 1
 
