@@ -9,10 +9,10 @@ from numpy.compat import unicode
 
 #if your file is within LIST_files
 #filepath = path.relpath("release-dates copy.list")
-#filepath = path.relpath("release-dates.list")
-filepath = "release-dates.list"
+#filepath = "release-dates copy.list"
+filepath = "workFiles/release-dates.list"
 
-counter = 1000
+#counter = 1000
 matrix = []
 with open(filepath, 'r') as file:
     #itterate through file
@@ -20,19 +20,23 @@ with open(filepath, 'r') as file:
         #line = unicode(line, errors="ignore")
         #print(line)
         #regex expression to split line
-        line = line.replace('\t','')
+        line = line.replace('\t',' ')
         line = line.replace('\n','')
-        sLine = re.split('\(|\)|\{|\}|\:[1-40]|\n',line)
+        #line = line.replace('  ',' ')
+        #print(line)
+        sLine = re.split("\s\(|\)\s|\{|\}|\:[1-40]",line)
 
         #filters out movie name with "name"
-        if sLine and sLine[0].find("\"") and sLine[0].find("#"):
+        if sLine and sLine[0].find("\""):
             if len(sLine)== 5:
                 matrix.append(sLine);
-            else:
-                print(sLine)
-            counter -= 1
-        if(counter < 0):
-            break
+            #else:
+                #debug 
+                #TODO:later give some conditions to add other lines into the code
+                #print(sLine)
+            #counter -= 1
+        #if(counter < 0):
+        #    break
     
 customHeader = ["name","year","rating","country","date"]
 dataframe = pd.DataFrame.from_records(matrix,columns=customHeader)
