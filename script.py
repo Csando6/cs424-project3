@@ -1,4 +1,3 @@
-from os import path
 import tokenize
 import re
 from numpy.compat import unicode
@@ -9,11 +8,12 @@ from numpy.compat import unicode
 
 #if your file is within LIST_files
 #filepath = path.relpath("release-dates copy.list")
-filepath = path.relpath("release-dates.list")
+#filepath = path.relpath("release-dates.list")
+filepath = "release-dates.list"
 
-
+counter = 1000
 matrix = []
-with open(filepath, 'r',encoding='utf-8',errors="ignore") as file:
+with open(filepath, 'r') as file:
     #itterate through file
     for line in file:
         #line = unicode(line, errors="ignore")
@@ -21,13 +21,16 @@ with open(filepath, 'r',encoding='utf-8',errors="ignore") as file:
         #regex expression to split line
         line = line.replace('\t','')
         line = line.replace('\n','')
-        sLine = re.split('\(|\)|\{|\}|:|\n',line)
+        sLine = re.split('\(|\)|\{|\}|:\d|\n',line)
 
         #filters out movie name with "name"
-        if sLine and sLine[0].find("\""):
+        if sLine and sLine[0].find("\"") and sLine[0].find("#"):
             matrix.append(sLine);
             #print(sLine)
+            counter -= 1
+        if(counter < 0):
+            break
     
 for elem in matrix:
-    print(elem);
+    print(elem)
 
