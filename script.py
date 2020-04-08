@@ -1,5 +1,6 @@
 import tokenize
 import re
+import pandas as pd
 from numpy.compat import unicode
 
 #if your file is in the same directory:
@@ -21,16 +22,23 @@ with open(filepath, 'r') as file:
         #regex expression to split line
         line = line.replace('\t','')
         line = line.replace('\n','')
-        sLine = re.split('\(|\)|\{|\}|:\d|\n',line)
+        sLine = re.split('\(|\)|\{|\}|\:[1-40]|\n',line)
 
         #filters out movie name with "name"
         if sLine and sLine[0].find("\"") and sLine[0].find("#"):
-            matrix.append(sLine);
-            #print(sLine)
+            if len(sLine)== 5:
+                matrix.append(sLine);
+            else:
+                print(sLine)
             counter -= 1
         if(counter < 0):
             break
     
-for elem in matrix:
-    print(elem)
+customHeader = ["name","year","rating","country","date"]
+dataframe = pd.DataFrame.from_records(matrix,columns=customHeader)
+
+dataframe.to_csv(filepath[0:10]+"-cleaned.csv", index=False)
+print("csv generated.")
+#for elem in exmatrix:
+#    print(elem)
 
