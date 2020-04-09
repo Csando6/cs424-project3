@@ -29,11 +29,13 @@ with open(filepath, 'r') as file:
         #filters out movie name with "name"
         if sLine and sLine[0].find("\""):
             if len(sLine)== 5:
+                for i in range(len(sLine)):
+                    sLine[i] = sLine[i].replace("(","");
                 matrix.append(sLine);
-            #else:
+            else:
                 #debug 
                 #TODO:later give some conditions to add other lines into the code
-                #print(sLine)
+                print(sLine)
             #counter -= 1
         #if(counter < 0):
         #    break
