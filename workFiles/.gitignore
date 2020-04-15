@@ -1,7 +1,2 @@
-certificates.list
-keywords.list
-release-dates.list
-genres.list
-movies.list
-running-times.list
-ratings.list
+*.list
+*.csv
