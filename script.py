@@ -17,7 +17,10 @@ matrix = []
 with open(filepath, 'r') as file:
     #itterate through file
     for line in file:
-        if re.match(".+\(\d+\)\s+\(.+\)\s*[\w\s]+:.+", line):
+        if(line[0] == '#' or line[0]=="'" or line[0]=="\""):
+            #do nothing
+            line
+        elif re.match(".+\(\d+\)\s+\(.+\)\s*[\w\s]+:.+", line):
             line = line.replace('\t','')
             line = line.replace('\n','')
             lineS = re.split("\(|\)|\:[1-40]",line)
