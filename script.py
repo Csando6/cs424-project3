@@ -23,7 +23,7 @@ with open(filepath, 'r') as file:
         elif re.match(".+\(\d+\)\s+\(.+\)\s*[\w\s]+:.+", line):
             line = line.replace('\t','')
             line = line.replace('\n','')
-            lineS = re.split("\(|\)|\:[1-40]",line)
+            lineS = re.split("\(|\)|\:[.]*",line)
             del lineS[2]
             #print(lineS)
             if(len(lineS) == 5 and lineS[0][0] != "#" and lineS[0][0] != "'"):
