@@ -5,3 +5,5 @@ genres.list
 movies.list
 running-times.list
 ratings.list
+test.py
+*.csv

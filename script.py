@@ -17,33 +17,22 @@ matrix = []
 with open(filepath, 'r') as file:
     #itterate through file
     for line in file:
-        #line = unicode(line, errors="ignore")
-        #print(line)
-        #regex expression to split line
-        line = line.replace('\t',' ')
-        line = line.replace('\n','')
-        #line = line.replace('  ',' ')
-        #print(line)
-        sLine = re.split("\s\(|\)\s|\{|\}|\:[1-40]",line)
-
-        #filters out movie name with "name"
-        if sLine and sLine[0].find("\""):
-            if len(sLine)== 5:
-                for i in range(len(sLine)):
-                    sLine[i] = sLine[i].replace("(","");
-                matrix.append(sLine);
-            else:
-                #debug 
-                #TODO:later give some conditions to add other lines into the code
-                print(sLine)
-            #counter -= 1
-        #if(counter < 0):
-        #    break
+        if(line[0] == '#' or line[0]=="'" or line[0]=="\""):
+            #do nothing
+            line
+        elif re.match(".+\(\d+\)\s+\(.+\)\s*[\w\s]+:.+", line):
+            line = line.replace('\t','')
+            line = line.replace('\n','')
+            lineS = re.split("\(|\)|\:[1-40]",line)
+            del lineS[2]
+            #print(lineS)
+            if(len(lineS) == 5 and lineS[0][0] != "#" and lineS[0][0] != "'"):
+                matrix.append(lineS)
     
 customHeader = ["name","year","rating","country","date"]
 dataframe = pd.DataFrame.from_records(matrix,columns=customHeader)
 
-dataframe.to_csv(filepath[0:10]+"-cleaned.csv", index=False)
+dataframe.to_csv(filepath[:-5]+"-cleaned.csv", index=False)
 print("csv generated.")
 #for elem in exmatrix:
 #    print(elem)
