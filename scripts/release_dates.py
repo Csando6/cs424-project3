@@ -3,7 +3,7 @@ import pandas as pd
 from numpy.compat import unicode
 
 print('scripting release-dates.py')
-filepath = "../workFiles/release-dates-short.list"
+filepath = "../workFiles/release-dates.list"
 
 removables = ['(TV)', '(V)', '(VG)', '(internet)', 'blu-ray premiere', 're-release', '????']    #items to remove
 count_rem_quote = 0  #init counters to 0
@@ -40,7 +40,8 @@ with open(filepath, 'r') as file:
                 if(section0[-1] == ')'):       #remove last parenthasis
                     section0 = section0[:-1]
                 section0_split = re.split('\)\s\(|\s\(|\)\s', section0) #split on parenthesis
-
+                print(section0_split)
+                
                 #prepare section 1
                 section1 = sections[1]
                 if(section1[-1] == '\n'):       #remove newline
