@@ -15,7 +15,7 @@ def removeWhite(line):
             i+=1
     return line
 
-filepath = "workFiles/ratings.list"
+filepath = "../workFiles/ratings.list"
 #filepath = "ratings-copy.list"
 
 #counter = 1000

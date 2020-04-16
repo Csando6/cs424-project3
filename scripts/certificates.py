@@ -3,7 +3,7 @@ import re
 import pandas as pd
 from numpy.compat import unicode
 
-filepath = "workFiles/certificates.list"
+filepath = "../workFiles/certificates.list"
 #filepath = "certificates-copy.list"
 
 
