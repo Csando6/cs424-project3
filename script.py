@@ -35,6 +35,4 @@ dataframe = pd.DataFrame.from_records(matrix,columns=customHeader)
 
 dataframe.to_csv(filepath[:-5]+"-cleaned.csv", index=False)
 print("csv generated.")
-#for elem in exmatrix:
-#    print(elem)
 

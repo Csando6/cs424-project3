@@ -12,6 +12,18 @@ matrix = []
 with open(filepath, 'r') as file:
     #itterate through file
     for line in file:
-        if(re.match(".+\(\d+\)\s+\(.+\)\s+\w+:.+",line) ):
-            print(line)
+        if re.match("[\w\s]+\(.+\)\s+\w+\:.+\(.+\)",line):
+            line = line.replace("\t","")
+            line = line.replace("\n","")
+            lineS = re.split("\(|\)|\:",line)
+            [elem.replace(" ","") for elem in lineS[1:]]
+            if lineS[-1] == "":del(lineS[-1])
+            if(len(lineS) == 5):
+                matrix.append(lineS)
+
+customHeader = ["name","year","country","rating","certificate"]
+dataframe = pd.DataFrame.from_records(matrix,columns=customHeader)
+
+dataframe.to_csv(filepath[:-5]+"-cleaned.csv", index=False)
+print("csv generated.")
         
