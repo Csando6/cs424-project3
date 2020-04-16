@@ -3,7 +3,7 @@ import pandas as pd
 from numpy.compat import unicode
 
 print('scripting release-dates.py')
-filepath = "workFiles/release-dates-short.list"
+filepath = "../workFiles/release-dates-short.list"
 
 removables = ['(TV)', '(V)', '(VG)', '(internet)', 'blu-ray premiere', 're-release', '????']    #items to remove
 count_rem_quote = 0  #init counters to 0
@@ -73,7 +73,7 @@ with open(filepath, 'r') as file:
                 pass
             
 
-printReport = True
+printReport = False
 if(printReport):
     #summary:
     print('items removed due to " : ' + str(count_rem_quote))
@@ -93,5 +93,5 @@ if(printReport):
 customHeader = ["title","year_produced","country","date_released", "details"]
 dataframe = pd.DataFrame.from_records(matrix,columns=customHeader)
 
-dataframe.to_csv("csvFiles/" + filepath.split('/')[1][:-5] + "-cleaned.csv", index=False)
+dataframe.to_csv("../csvFiles/" + filepath.split('/')[2][:-5] + "-cleaned.csv", index=False)
 print("csv generated.")
