@@ -1,0 +1,98 @@
+FORMAT OF EACH FILE:
+[There could be exceptions, but i tried to capture the general trend through each files]
+(TV) -> stands for any: TV, V, VG, etc.
+* repeated 0, 1, or more times
+~ optional attribute
+a space can also be a tab...
+
+-------------------------------------------------------------------------------------------------
+CERTIFICATES:
+
+<Title (Year) (TV)* Country:Rating (Detail)*>
+
+
+example:
+Haute tension (2003) South Korea:18 (re-rating) (cut) (DVD rating) (uncut)
+
+
+-------------------------------------------------------------------------------------------------
+GENRES:
+
+<Title (Year) (TV)* Genre>
+
+example:
+Akujo no kamen (1980) (TV) Crime
+
+
+-------------------------------------------------------------------------------------------------
+KEYWORDS (part 1):
+
+<Keyword (Quantity)>
+
+example:
+cyberculture (8)
+
+
+-------------------------------------------------------------------------------------------------
+KEYWORDS (part 2):
+
+<Title (Year) (TV)* Keyword>
+
+example:
+Deep Impact (1998) yacht
+
+
+-------------------------------------------------------------------------------------------------
+MOVIES:
+
+<Title (Year) (TV)* Year2>
+
+note: 
+Year and Year2 usually identical but not always.
+
+example:
+Jane (1982) 1982
+
+
+-------------------------------------------------------------------------------------------------
+RATINGS:
+
+<Distribution Votes Rank Title (Year) (TV)*>
+
+note:
+I find the voting system difficult to understand apart that Rank goes from 1 (bad) to 10 (good).
+
+example:
+1...002112   28    7.4   Goodnight Moon (2001)
+
+
+-------------------------------------------------------------------------------------------------
+RELEASE DATES:
+
+<Title (Year) (TV)* Country:Date (Detail)*>
+
+note:
+most movies are released same year as produced. But sometimes they are released later (ex: in a different country - see below)
+
+example:
+Enemy (2013) Hungary:10 October 2015 (TV premiere)
+
+
+-------------------------------------------------------------------------------------------------
+RUNNING TIMES:
+
+<Title (Year) (TV)* ~Country:~Minutes (Detail)*>
+
+examples:
+Warlords (2007) (TV) Netherlands:280 (4 parts) (DVD)
+Yukiko (2011) 15
+
+
+
+
+
+
+
+
+
+
