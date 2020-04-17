@@ -3,14 +3,9 @@ import re
 import pandas as pd
 from numpy.compat import unicode
 
-#if your file is in the same directory:
-#filename = 'release-dates.list'
-#file = open(filename)
 
-#if your file is within LIST_files
-#filepath = path.relpath("release-dates copy.list")
 #filepath = "release-dates copy.list"
-filepath = "../workFiles/release-dates.list"
+filepath = "../workFiles/keywords-copy.list"
 filterList = ["VG"]
 matrix = []
 
