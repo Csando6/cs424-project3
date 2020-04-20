@@ -5,9 +5,9 @@ from numpy.compat import unicode
 print('running master script.py')
 
 txt_path = "../csvFiles/bad_movie_list.txt"
-genres_path = "../csvFiles/genres-short-cleaned.csv"
-movies_path = "../csvFiles/movies-short-cleaned.csv"
-runtimes_path = "../csvFiles/running-times-short-cleaned.csv"
+genres_path = "../csvFiles/genres-cleaned.csv"
+movies_path = "../csvFiles/movies-cleaned.csv"
+runtimes_path = "../csvFiles/running-times-cleaned.csv"
 
 bad_movies = set()
 genres_matrix = [] #lists for the csvs
@@ -19,7 +19,7 @@ count_remove_genres   = 0
 count_remove_movies   = 0
 count_remove_runtimes = 0
 
-with open(txt_path) as txt, open(genres_path) as genres, open(movies_path, encoding='utf-8') as movies, open(runtimes_path) as runtimes:
+with open(txt_path) as txt, open(genres_path) as genres, open(movies_path, encoding='utf-8') as movies, open(runtimes_path, encoding='utf-8') as runtimes:
     #txt file
     for line in txt:
         line = line[:-1]  #take off newline
@@ -61,14 +61,14 @@ with open(txt_path) as txt, open(genres_path) as genres, open(movies_path, encod
             runtimes_matrix.append(sLine)
 
         
-printReport = True
+printReport = False
 if(printReport):
 
     #report:
     print('genres removed from final result: ' + str(count_remove_genres))
     print('movies removed from final result: ' + str(count_remove_movies))
     print('running times removed from final result: ' + str(count_remove_runtimes))
-
+    print('...')
 
 #for each category:  2D List -> dataframe -> csv
 

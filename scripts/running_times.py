@@ -3,20 +3,24 @@ import pandas as pd
 from numpy.compat import unicode
 
 print('scripting running_times.py')
-filepath = "../workFiles/running-times-short.list"
+filepath = "../workFiles/running-times.list"
 
 bad_types = ['(TV)', '(V)', '(VG)', '(internet)', 'blu-ray premiere', 're-release', '????']    #items to remove
 bad_duration_movies = set()
+good_set = set()
 
 #init counters to 0
 count_quote     = 0  
 count_bad_type  = 0
+count_runtime_format = 0
 count_not_2     = 0
-count_bad_duration = 0
+count_bad_dur_entry = 0
+count_bad_duration  = 0
 count_good      = 0
+count_good_2    = 0
 count_total     = 0
 
-matrix = []
+matrix  = []
 
 with open(filepath, 'r') as file:
     
@@ -56,18 +60,28 @@ with open(filepath, 'r') as file:
                     
                 section1_split = re.split(':',section1,1)
 
+
+                #if duration is unconventional (around 1300 of those): just remove that entry
+                split_time = re.split(':|\.|;|\'|-|,|\s|\"|m|/|x|\+|\*', section1_split[1])
+                if len(split_time) > 1: #don't want a foramt that is not a single digit
+                    count_runtime_format += 1
+                    pass  #do nothing
+
                 #discard lines that don't have 2 attributes in section 0
-                if (len(section0_split) != 2):
+                elif (len(section0_split) != 2):
                     count_not_2 += 1
                     pass  #do nothing
-                    
+                
                 #keep good lines (some bad duration movies will be removed later)
                 else:
-                    #mark bad lines due to duration
-                    if (int(section1_split[1]) < 60): #less than 60 min running time -> bad
-                        count_bad_duration += 1
-                        bad_duration_movies.add(movieID)
-                            
+
+                    #if 60+ duration -> add to good set
+                    if(int(section1_split[1]) >= 60):
+                        good_set.add(movieID)
+
+                    else:  #don't add to good set                    
+                        count_bad_dur_entry += 1
+
                     try:   #if there is a section2:
                         #prepare section 2
                         section2 = sections[2][:-1]
@@ -78,35 +92,54 @@ with open(filepath, 'r') as file:
 
                     except: #section 2 doesn't exist
                         sLine = [movieID] + section0_split + section1_split
-                
+
+                    #add result to matrix 1
                     count_good += 1
                     matrix.append(sLine)
-
+                        
             except IndexError:
                 pass
 
+#now that we have matrix 1 -> remove bad entries from it. good entries go to matrix 2.
+matrix2 = []
+for movie in matrix:
+    if movie[0] not in good_set: #not good -> bad
+        count_bad_duration += 1
+        bad_duration_movies.add(movie[0])
+    if int(movie[4]) >= 60:  #append only movies 60+
+        count_good_2 += 1
+        matrix2.append(movie)
+
+
 #write bad-duration movies into text file
-f = open('../csvFiles/bad_movie_list.txt', 'w')
+f = open('../csvFiles/bad_movie_list.txt', 'a')
 for movie in bad_duration_movies:
     f.write(movie + '\n')
+f.write('----------\n')
 print("txt updated with bad durations.")
 f.close()
 
 
-printReport = True
+printReport = False
 if(printReport):
 
     #report:
+    print('...')
     print('items total: ' + str(count_total))
     print('items removed due to " : ' + str(count_quote))
     print('items removed due to bad type (ex: TV): ' + str(count_bad_type))
+    print('items removed to bad runtime format : ' + str(count_runtime_format))
     print('items removed due to not 2 attributes before tabs: ' + str(count_not_2))
-    print('items marked as bad duration : ' + str(count_bad_duration))
+    print('items removed due to being a bad duration entry: ' + str(count_bad_dur_entry))
     print('items kept: ' + str(count_good))
+    print('items marked as bad duration : ' + str(count_bad_duration))
+    print('items kept 2: ' + str(count_good_2))
+    print('...')
+
 
 
 #2D list -> dataframe
-dataframe = pd.DataFrame.from_records(matrix) 
+dataframe = pd.DataFrame.from_records(matrix2) 
 
 #datafram -> csv
 root = filepath.split('/')[2][:-5]

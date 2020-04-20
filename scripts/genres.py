@@ -4,7 +4,7 @@ import codecs
 from numpy.compat import unicode
 
 print('scripting genres.py')
-filepath = "../workFiles/genres-short.list"
+filepath = "../workFiles/genres.list"
 
 bad_types = ['(TV)', '(V)', '(VG)', '(internet)', 'blu-ray premiere', 're-release', '????']    #items to remove
 bad_genres = ['Short', 'Adult', 'Reality-TV',  'Talk-Show', 'Game-Show', 'News', 'Reality-tv', 'Sci-fi', 'Sex', 'Lifestyle', 'Hardcore', 'Experimental', 'Erotica', 'Commercial']
@@ -77,9 +77,10 @@ with open(filepath, 'r') as file:
             
 
 #write bad-genre movies into text file
-f = open('../csvFiles/bad_movie_list.txt', 'w')
+f = open('../csvFiles/bad_movie_list.txt', 'a')
 for movie in bad_genre_movies:
     f.write(movie + '\n')
+f.write('----------\n')
 print("txt updated with bad genres.")
 f.close()
 
@@ -88,12 +89,14 @@ printReport = False
 if(printReport):
 
     #report:
+    print('...')
     print('items total: ' + str(count_total))
     print('items removed due to " : ' + str(count_quote))
     print('items removed due to bad type (ex: TV): ' + str(count_bad_type))
     print('items removed due to not 2 attributes before tabs: ' + str(count_not_2))
     print('items marked as bad_genre : ' + str(count_bad_genre))
     print('items kept: ' + str(count_good))
+    print('...')
 
 
 #2D list -> dataframe

@@ -3,7 +3,7 @@ import pandas as pd
 from numpy.compat import unicode
 
 print('scripting movies.py')
-filepath = "../workFiles/movies-short.list"
+filepath = "../workFiles/movies.list"
 
 bad_types = ['(TV)', '(V)', '(VG)', '(internet)', 'blu-ray premiere', 're-release', '????']    #items to remove
 
@@ -69,11 +69,13 @@ printReport = False
 if(printReport):
 
     #report:
+    print('...')
     print('items total: ' + str(count_total))
     print('items removed due to " : ' + str(count_quote))
     print('items removed due to bad type (ex: TV): ' + str(count_bad_type))
     print('items removed due to not 2 attributes before tabs: ' + str(count_not_2))
     print('items kept: ' + str(count_good))
+    print('...')
 
 
 #2D list -> dataframe
