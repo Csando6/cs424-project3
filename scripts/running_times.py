@@ -3,7 +3,7 @@ import pandas as pd
 from numpy.compat import unicode
 
 print('scripting running_times.py')
-filepath = "../workFiles/running-times.list"
+filepath = "../workFiles/running-times-short.list"
 
 bad_types = ['(TV)', '(V)', '(VG)', '(internet)', 'blu-ray premiere', 're-release', '????']    #items to remove
 bad_duration_movies = set()

@@ -4,7 +4,7 @@ import codecs
 from numpy.compat import unicode
 
 print('scripting genres.py')
-filepath = "../workFiles/genres.list"
+filepath = "../workFiles/genres-short.list"
 
 bad_types = ['(TV)', '(V)', '(VG)', '(internet)', 'blu-ray premiere', 're-release', '????']    #items to remove
 bad_genres = ['Short', 'Adult', 'Reality-TV',  'Talk-Show', 'Game-Show', 'News', 'Reality-tv', 'Sci-fi', 'Sex', 'Lifestyle', 'Hardcore', 'Experimental', 'Erotica', 'Commercial']

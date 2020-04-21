@@ -3,7 +3,7 @@ import pandas as pd
 from numpy.compat import unicode
 
 print('scripting movies.py')
-filepath = "../workFiles/movies.list"
+filepath = "../workFiles/movies-short.list"
 
 bad_types = ['(TV)', '(V)', '(VG)', '(internet)', 'blu-ray premiere', 're-release', '????']    #items to remove
 
@@ -40,7 +40,7 @@ with open(filepath, 'r') as file:
             try:
                 #prepare section 0
                 section0 = sections[0]
-                if(section0[-1] == ')'):       #remove last parenthasis
+                if(section0[-1] == ')'):       #remove last parenthesis
                     section0 = section0[:-1]
                 section0_split = re.split('\)\s\(|\s\(|\)\s', section0) #split on parenthesis
                 movieID = section0_split[0] + '-' + section0_split[1]   #define a unique movieID by combining title and year
@@ -81,7 +81,7 @@ if(printReport):
 #2D list -> dataframe
 dataframe = pd.DataFrame.from_records(matrix) 
 
-#datafram -> csv
+#dataframe -> csv
 root = filepath.split('/')[2][:-5]
 dataframe.to_csv("../csvFiles/" + root + "-cleaned.csv", sep='\t', header=False, index=False)
 print(root + " csv generated.")
