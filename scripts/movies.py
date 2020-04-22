@@ -3,7 +3,7 @@ import pandas as pd
 from numpy.compat import unicode
 
 print('scripting movies.py')
-filepath = "../workFiles/movies-short.list"
+filepath = "../workFiles/movies.list"
 
 bad_types = ['(TV)', '(V)', '(VG)', '(internet)', 'blu-ray premiere', 're-release', '????']    #items to remove
 
@@ -65,7 +65,7 @@ with open(filepath, 'r') as file:
                 pass
             
 
-printReport = False
+printReport = True
 if(printReport):
 
     #report:
@@ -85,3 +85,4 @@ dataframe = pd.DataFrame.from_records(matrix)
 root = filepath.split('/')[2][:-5]
 dataframe.to_csv("../csvFiles/" + root + "-cleaned.csv", sep='\t', header=False, index=False)
 print(root + " csv generated.")
+print('...')

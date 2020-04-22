@@ -3,7 +3,7 @@ import pandas as pd
 from numpy.compat import unicode
 
 print('scripting release_dates.py')
-filepath = "../workFiles/release-dates-short.list"
+filepath = "../workFiles/release-dates.list"
 
 bad_types = ['(TV)', '(V)', '(VG)', '(internet)', 'blu-ray premiere', 're-release', '????']    #items to remove
 
@@ -98,6 +98,7 @@ dataframe = pd.DataFrame.from_records(matrix)
 root = filepath.split('/')[2][:-5]
 dataframe.to_csv("../csvFiles/" + root + "-cleaned.csv", sep='\t', header=False, index=False)
 print(root + " csv generated.")
+print('...')
     
             
 

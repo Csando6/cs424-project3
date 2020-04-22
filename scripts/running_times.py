@@ -3,7 +3,7 @@ import pandas as pd
 from numpy.compat import unicode
 
 print('scripting running_times.py')
-filepath = "../workFiles/running-times-short.list"
+filepath = "../workFiles/running-times.list"
 
 bad_types = ['(TV)', '(V)', '(VG)', '(internet)', 'blu-ray premiere', 're-release', '????']    #items to remove
 bad_duration_movies = set()
@@ -116,11 +116,11 @@ f = open('../csvFiles/bad_movie_list.txt', 'a')
 for movie in bad_duration_movies:
     f.write(movie + '\n')
 f.write('----------\n')
-print("txt updated with bad durations.")
+print("txt updated with bad duration movies.")
 f.close()
 
 
-printReport = False
+printReport = True
 if(printReport):
 
     #report:
@@ -145,11 +145,4 @@ dataframe = pd.DataFrame.from_records(matrix2)
 root = filepath.split('/')[2][:-5]
 dataframe.to_csv("../csvFiles/" + root + "-cleaned.csv", sep='\t', header=False, index=False)
 print(root + " csv generated.")
-
-            
-
-##customHeader = ["title","year_produced","country","time_min", "details"]
-##dataframe = pd.DataFrame.from_records(matrix,columns=customHeader)
-##
-##dataframe.to_csv("../csvFiles/" + filepath.split('/')[2][:-5] + "-cleaned.csv", index=False)
-##print("csv generated.")
+print('...')

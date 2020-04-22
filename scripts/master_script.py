@@ -2,30 +2,45 @@ import re
 import pandas as pd
 from numpy.compat import unicode
 
-print('running master script.py')
+f = open('../csvFiles/bad_movie_list.txt', 'w')
+f.write('')
+
+#run individual scripts:
+import release_dates
+import movies
+import genres
+import running_times
+import certificates
+
+print('running master_script.py')
 
 txt_path = "../csvFiles/bad_movie_list.txt"
-genres_path = "../csvFiles/genres-short-cleaned.csv"
-movies_path = "../csvFiles/movies-short-cleaned.csv"
-runtimes_path = "../csvFiles/running-times-short-cleaned.csv"
-release_dates_path = "../csvFiles/release-dates-short-cleaned.csv"
+genres_path = "../csvFiles/genres-cleaned.csv"
+movies_path = "../csvFiles/movies-cleaned.csv"
+runtimes_path = "../csvFiles/running-times-cleaned.csv"
+release_dates_path = "../csvFiles/release-dates-cleaned.csv"
+certificates_path = "../csvFiles/certificates-cleaned.csv"
 
 bad_movies = set()
+
 genres_matrix = [] #lists for the csvs
 movies_matrix = []
 runtimes_matrix = []  #(runtimes = running_times)
 release_dates_matrix = []
+certificates_matrix = []
 
 #init counters to 0
 count_remove_genres   = 0
 count_remove_movies   = 0
 count_remove_runtimes = 0
 count_rem_release_dates=0
+count_rem_certificates =0
 
 with open(txt_path) as txt, open(genres_path) as genres, \
      open(movies_path, encoding='utf-8') as movies, \
      open(runtimes_path, encoding='utf-8') as runtimes, \
-     open(release_dates_path) as release_dates:
+     open(release_dates_path) as release_dates, \
+     open(certificates_path) as certificates:
     
     #txt file
     for line in txt:
@@ -79,6 +94,18 @@ with open(txt_path) as txt, open(genres_path) as genres, \
         else:
             release_dates_matrix.append(sLine)
 
+
+    #certificates
+    for line in certificates:
+        line = line[:-1]  #take off newline
+        sLine = line.split('\t')
+        
+        #if the movie is not a bad movie: append it to the matrix
+        if (sLine[0] in bad_movies):
+            count_rem_certificates += 1
+        else:
+            certificates_matrix.append(sLine)
+
         
 printReport = True
 if(printReport):
@@ -88,6 +115,7 @@ if(printReport):
     print('movies removed from final result: ' + str(count_remove_movies))
     print('running times removed from final result: ' + str(count_remove_runtimes))
     print('release dates removed from final result: ' + str(count_rem_release_dates))
+    print('certificates removed from final result: ' + str(count_rem_certificates))
     print('...')
 
 #for each category:  2D List -> dataframe -> csv
@@ -116,4 +144,8 @@ release_dates_df = pd.DataFrame.from_records(release_dates_matrix,columns=releas
 release_dates_df.to_csv("../csvFiles/final_csvFiles/" + release_dates_path.split('/')[2][:-4] + "-final.csv", index=False)
 print("final release-dates csv generated.")
 
-
+#certificates
+certificatesHeader = ["movieID","title","year-produced","country","rating", "details"]
+certificates_df = pd.DataFrame.from_records(certificates_matrix,columns=certificatesHeader)
+certificates_df.to_csv("../csvFiles/final_csvFiles/" + certificates_path.split('/')[2][:-4] + "-final.csv", index=False)
+print("final certificates csv generated.")

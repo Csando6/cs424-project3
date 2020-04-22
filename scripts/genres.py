@@ -4,10 +4,11 @@ import codecs
 from numpy.compat import unicode
 
 print('scripting genres.py')
-filepath = "../workFiles/genres-short.list"
+filepath = "../workFiles/genres.list"
 
 bad_types = ['(TV)', '(V)', '(VG)', '(internet)', 'blu-ray premiere', 're-release', '????']    #items to remove
-bad_genres = ['Short', 'Adult', 'Reality-TV',  'Talk-Show', 'Game-Show', 'News', 'Reality-tv', 'Sci-fi', 'Sex', 'Lifestyle', 'Hardcore', 'Experimental', 'Erotica', 'Commercial']
+bad_genres = ['Short', 'Adult', 'Reality-TV',  'Talk-Show', 'Game-Show', 'News', 'Reality-tv', 'Sci-fi', 'Sex',
+              'Lifestyle', 'Hardcore', 'Experimental', 'Erotica', 'Commercial']
 bad_genre_movies = set()
 
 #init counters to 0
@@ -63,8 +64,9 @@ with open(filepath, 'r') as file:
                     section1 = sections[1]       #prepare section 1 (genre)
                     if(section1[-1] == '\n'):
                         section1 = section1[:-1]
-                        
-                    if (section1 in bad_genres): #store into set
+
+                    #if a bad genre: put into bad set                            
+                    if (section1 in bad_genres):
                         count_bad_genre += 1
                         bad_genre_movies.add(movieID)
 
@@ -81,11 +83,11 @@ f = open('../csvFiles/bad_movie_list.txt', 'a')
 for movie in bad_genre_movies:
     f.write(movie + '\n')
 f.write('----------\n')
-print("txt updated with bad genres.")
+print("txt updated with bad genre movies.")
 f.close()
 
 
-printReport = False
+printReport = True
 if(printReport):
 
     #report:
@@ -106,3 +108,4 @@ dataframe = pd.DataFrame.from_records(matrix)
 root = filepath.split('/')[2][:-5]
 dataframe.to_csv("../csvFiles/" + root + "-cleaned.csv", sep='\t', header=False, index=False)
 print(root + " csv generated.")
+print('...')
