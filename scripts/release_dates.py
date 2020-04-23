@@ -45,6 +45,7 @@ with open(filepath, 'r') as file:
                     section0 = section0[:-1]
                 section0_split = re.split('\)\s\(|\s\(|\)\s', section0) #split on parenthesis
                 movieID = section0_split[0] + '-' + section0_split[1]   #define a unique movieID by combining title and year
+                #print(section0_split)
                 
                 #prepare section 1
                 section1 = sections[1]
