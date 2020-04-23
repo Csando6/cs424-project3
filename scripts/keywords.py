@@ -103,7 +103,7 @@ root = filepath.split('/')[2][:-5]
 #creating file for keywords
 headerKeys = ["keyword","rating"]
 dataKeys = pd.DataFrame.from_records(matrixKeys,columns=headerKeys)
-dataKeys.to_csv("../csvFiles/" + root +"-keys-cleaned.csv", index=False)
+dataKeys.to_csv("../csvFiles/final_csvFiles/" + root +"-keys-cleaned.csv", index=False)
 print(root + " keys csv generated.")
 
 #creating file for movies

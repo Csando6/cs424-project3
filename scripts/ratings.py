@@ -37,5 +37,5 @@ with open(filepath, 'r') as file:
 customHeader = ["distribution","votes","rank","title","year"]
 dataframe = pd.DataFrame.from_records(matrix,columns=customHeader)
 
-dataframe.to_csv("../csvFiles/" + filepath.split('/')[2][:-5] + "-cleaned.csv", index=False)
+dataframe.to_csv("../csvFiles/final_csvFiles/" + filepath.split('/')[2][:-5] + "-cleaned.csv", index=False)
 print("csv generated.")
