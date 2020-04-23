@@ -40,7 +40,7 @@ with open(filepath, 'r') as file:
                 if(section0[-1] == ')'):       #remove last parenthasis
                     section0 = section0[:-1]
                 section0_split = re.split('\)\s\(|\s\(|\)\s', section0) #split on parenthesis
-                print(section0_split)
+                #print(section0_split)
                 
                 #prepare section 1
                 section1 = sections[1]
