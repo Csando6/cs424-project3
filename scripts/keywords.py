@@ -4,7 +4,6 @@ import pandas as pd
 from numpy.compat import unicode
 
 print('scripting keywords.py')
-
 def removeWhite(line):
     i=0
     while i < len(line)-2:
@@ -69,3 +68,4 @@ dataMovie = pd.DataFrame.from_records(matrixMovies,columns=headerMovies)
 dataMovie.to_csv(filepath[:-5]+"-movies-cleaned.csv", index=False)
 
 print("csv generated.")
+
