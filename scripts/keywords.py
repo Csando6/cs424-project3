@@ -57,15 +57,17 @@ with open(filepath, 'r') as file:
             #lineS = filter(None, lineS)
             if(len(lineS)==3):
                 matrixMovies.append(lineS)
-            
+
+root = filepath.split('/')[2][:-5]
+
 #creating file for keywords
 dataKeys = pd.DataFrame.from_records(matrixKeys,columns=headerKeys)
-dataKeys.to_csv(filepath[:-5]+"-keys-cleaned.csv", index=False)
+dataKeys.to_csv("../csvFiles/" + root +"-keys-cleaned.csv", index=False)
 
 
 #creating file for movies
 dataMovie = pd.DataFrame.from_records(matrixMovies,columns=headerMovies)
-dataMovie.to_csv(filepath[:-5]+"-movies-cleaned.csv", index=False)
+dataMovie.to_csv("../csvFiles/" + root +"-movies-cleaned.csv", index=False)
 
 print("csv generated.")
 
