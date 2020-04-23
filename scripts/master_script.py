@@ -11,6 +11,7 @@ import movies
 import genres
 import running_times
 import certificates
+import keywords
 
 print('running master_script.py')
 
@@ -20,6 +21,7 @@ movies_path = "../csvFiles/movies-cleaned.csv"
 runtimes_path = "../csvFiles/running-times-cleaned.csv"
 release_dates_path = "../csvFiles/release-dates-cleaned.csv"
 certificates_path = "../csvFiles/certificates-cleaned.csv"
+keywords_path = "../csvFiles/keywords-movies-cleaned.csv"
 
 bad_movies = set()
 
@@ -28,6 +30,7 @@ movies_matrix = []
 runtimes_matrix = []  #(runtimes = running_times)
 release_dates_matrix = []
 certificates_matrix = []
+keywords_matrix = []
 
 #init counters to 0
 count_remove_genres   = 0
@@ -35,12 +38,14 @@ count_remove_movies   = 0
 count_remove_runtimes = 0
 count_rem_release_dates=0
 count_rem_certificates =0
+count_rem_keywords    = 0
 
 with open(txt_path) as txt, open(genres_path) as genres, \
      open(movies_path, encoding='utf-8') as movies, \
      open(runtimes_path, encoding='utf-8') as runtimes, \
      open(release_dates_path) as release_dates, \
-     open(certificates_path) as certificates:
+     open(certificates_path) as certificates, \
+     open(keywords_path) as keywords:
     
     #txt file
     for line in txt:
@@ -106,6 +111,17 @@ with open(txt_path) as txt, open(genres_path) as genres, \
         else:
             certificates_matrix.append(sLine)
 
+    #keywords
+    for line in keywords:
+        line = line[:-1]  #take off newline
+        sLine = line.split('\t')
+        
+        #if the movie is not a bad movie: append it to the matrix
+        if (sLine[0] in bad_movies):
+            count_rem_keywords += 1
+        else:
+            keywords_matrix.append(sLine)
+
         
 printReport = True
 if(printReport):
@@ -116,6 +132,7 @@ if(printReport):
     print('running times removed from final result: ' + str(count_remove_runtimes))
     print('release dates removed from final result: ' + str(count_rem_release_dates))
     print('certificates removed from final result: ' + str(count_rem_certificates))
+    print('keywords removed from final result: ' + str(count_rem_keywords))
     print('...')
 
 #for each category:  2D List -> dataframe -> csv
@@ -149,3 +166,9 @@ certificatesHeader = ["movieID","title","year-produced","country","rating", "det
 certificates_df = pd.DataFrame.from_records(certificates_matrix,columns=certificatesHeader)
 certificates_df.to_csv("../csvFiles/final_csvFiles/" + certificates_path.split('/')[2][:-4] + "-final.csv", index=False)
 print("final certificates csv generated.")
+
+#keywords
+keywordsHeader = ["movieID","title","year-produced","keyword"]
+keywords_df = pd.DataFrame.from_records(keywords_matrix,columns=keywordsHeader)
+keywords_df.to_csv("../csvFiles/final_csvFiles/" + keywords_path.split('/')[2][:-4] + "-final.csv", index=False)
+print("final keywords movies csv generated.")

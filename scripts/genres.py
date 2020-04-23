@@ -104,7 +104,7 @@ if(printReport):
 #2D list -> dataframe
 dataframe = pd.DataFrame.from_records(matrix) 
 
-#datafram -> csv
+#dataframe -> csv
 root = filepath.split('/')[2][:-5]
 dataframe.to_csv("../csvFiles/" + root + "-cleaned.csv", sep='\t', header=False, index=False)
 print(root + " csv generated.")

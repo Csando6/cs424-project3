@@ -8,8 +8,8 @@ filepath = "../workFiles/certificates.list"
 
 bad_types = ['(TV)', '(V)', '(VG)', '(internet)', 'blu-ray premiere', 're-release', '????']    #items to remove
 rem_certificates = [':TV-G', ':TV-14', ':TV-Y', ':TV-PG', ':TV-MA', 'TV rating', 'tv rating',
-                    ':E', ':E10+', ':T', ':C', ':M', 'Not Rated', 'not rated', ':unrated', ':Unrated']
-bad_certificates = ['USA:X', 'USA:NC-17']
+                    ':E', ':E10+', ':T', ':C', ':M']
+bad_certificates = ['USA:X', 'USA:NC-17', 'USA:Not Rated', 'USA:not rated', 'USA:unrated', 'USA:Unrated']
 bad_certificate_movies = set()
 
 #init counters to 0
@@ -17,7 +17,8 @@ count_quote     = 0
 count_bad_type  = 0
 count_not_2     = 0
 count_rem_cert  = 0
-count_bad_cert  = 0
+count_bad_cert_1  = 0
+count_bad_cert_2  = 0
 count_rem_country = 0
 count_good      = 0
 count_total     = 0
@@ -34,6 +35,20 @@ with open(filepath, 'r') as file:
         if(line[0]=="\""):
             count_quote += 1
             pass  #do nothing
+
+        #put items from bad_certificates into badset
+        elif any(item in line for item in bad_certificates):
+            sections_ = re.split('\t+', line)
+            count_bad_cert_1 += 1
+            try:
+                section0 = sections[0]
+                if(section0[-1] == ')'):       #remove last parenthesis
+                    section0 = section0[:-1]
+                section0_split = re.split('\)\s\(|\s\(|\)\s', section0) #split on parenthesis
+                movieID = section0_split[0] + '-' + section0_split[1]   #define a unique movieID by combining title and year
+                bad_certificate_movies.add(movieID)
+            except:
+                pass
         
         #discard lines with item from bad_types list:
         elif any(rem in line for rem in bad_types):
@@ -64,6 +79,7 @@ with open(filepath, 'r') as file:
                     
                 #keep good lines (some bad certificate movies remain but will be removed later)
                 else:
+                    
                     #prepare section 1 (country:cert)
                     section1 = sections[1]
                     if(section1[-1] == '\n'):       #remove newline
@@ -71,7 +87,7 @@ with open(filepath, 'r') as file:
 
                     #if a bad certificate: put into bad set    
                     if (section1 in bad_certificates):
-                        count_bad_cert += 1
+                        count_bad_cert_2 += 1
                         bad_certificate_movies.add(movieID)
 
                     section1_split = re.split(':', section1)
@@ -121,10 +137,11 @@ if(printReport):
     print('items total: ' + str(count_total))
     print('items removed due to " : ' + str(count_quote))
     print('items removed due to bad type (ex: TV): ' + str(count_bad_type))
-    print('items removed due to bad (rem) certificate (ex: Not Rated): ' + str(count_rem_cert))
+    print('items removed due to bad (rem) certificate (ex: TV-14): ' + str(count_rem_cert))
     print('items removed due to not 2 attributes before tabs: ' + str(count_not_2))
     print('items removed due to having a non-USA certificate: ' + str(count_rem_country))
-    print('items marked as bad_certificate : ' + str(count_bad_cert))
+    print('items marked as bad_certificate_1 : ' + str(count_bad_cert_1))
+    print('items marked as bad_certificate_2 : ' + str(count_bad_cert_2))
     print('items kept: ' + str(count_good))
     print('...')
 
