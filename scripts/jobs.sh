@@ -1,0 +1,10 @@
+#! /bin/bash
+python certificates.py
+python genres.py
+python keywords.py
+python movies.py
+python ratings.py
+python release_dates.py
+python running_times.py
+#python scripts.py
+#python test.py
