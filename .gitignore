@@ -2,3 +2,4 @@ other_scripts/
 test.py
 *.csv
 *.list
+.Rhistory
