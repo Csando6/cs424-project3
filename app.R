@@ -10,6 +10,7 @@ library(shiny)
 library(shinydashboard)
 library(devtools)        #for theme
 library(dashboardthemes) #for theme
+library(ggplot2)
 
 
 #IMPORTANT: app.R needs "dark_theme_mod.R" in the same directory to run well with the dark theme:
@@ -65,20 +66,20 @@ ui <- dashboardPage(
                     
                     fluidRow(       
                         box(title = "Movies by Year", background = "black", solidHeader = TRUE, status = "primary", width= 12,
-                            plotOutput("genreBarGraph", height = 350)
+                            plotOutput("yearBarGraph", height = 350)
                         ),
                         box(title = "Movies by Month", background = "black", solidHeader = TRUE, status = "primary", width= 12,
-                            plotOutput("genreBarGraph", height = 350)
+                            plotOutput("monthBarGraph", height = 350)
                         )
                     )
              ),
              column(4,
                     fluidRow(       
                       box(title = "Movies by Running Time", background = "black", solidHeader = TRUE, status = "primary", width= 12,
-                          plotOutput("genreBarGraph", height = 350)
+                          plotOutput("runTimeBarGraph", height = 350)
                       ),
                       box(title = "Movies by Certificate", background = "black", solidHeader = TRUE, status = "primary", width= 12,
-                          plotOutput("genreBarGraph", height = 350)
+                          plotOutput("certificateBarGraph", height = 350)
                       )
                     )
              ),
@@ -88,7 +89,7 @@ ui <- dashboardPage(
                           plotOutput("genreBarGraph", height = 350)
                       ),
                       box(title = "Top N Keywords", background = "black", solidHeader = TRUE, status = "primary", width= 12,
-                          plotOutput("genreBarGraph", height = 350)
+                          plotOutput("keywordsBarGraph", height = 350)
                       )
                     )
              )
