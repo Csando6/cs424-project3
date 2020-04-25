@@ -9,12 +9,12 @@
 library(shiny)
 library(shinydashboard)
 library(devtools)        #for theme
-library(dashboardthemes) #for theme
+#library(dashboardthemes) #for theme
 library(ggplot2)
 
 
 #IMPORTANT: app.R needs "dark_theme_mod.R" in the same directory to run well with the dark theme:
-source("dark_theme_mod.R") #connect
+#source("dark_theme_mod.R") #connect
 
 #NOTE: the data file to be read here is first processed by our Python scripts.
 #READ IN THE DATA FILES:
@@ -22,10 +22,20 @@ source("dark_theme_mod.R") #connect
 #certificates <- read.csv(file = "csvFiles/final_csvFiles/certificates-cleaned-final.csv",sep=",", header= TRUE)
 genres <- read.csv(file="csvFiles/final_csvFiles/genres-cleaned-final.csv",sep=",", header=TRUE)
 #keyWords <- read.csv(file="csvFiles/final_csvFiles/keywords-movies-cleaned-final.csv",sep=",", header=TRUE)
-#movies <- read.csv(file="csvFiles/final_csvFiles/movies-cleaned-final.csv",sep=",",header=TRUE)
-#releaseDates <- read.csv(file="csvFiles/final_csvFiles/release-dates-cleaned-final.csv",sep=",",header=TRUE)
+movies <- read.csv(file="csvFiles/final_csvFiles/movies-cleaned-final.csv",sep=",",header=TRUE)
+releaseDates <- read.csv(file="csvFiles/final_csvFiles/release-dates-cleaned-final.csv",sep=",",header=TRUE)
 #runningTimes <- read.csv(file="csvFiles/final_csvFiles/running-times-cleaned-final.csv",sep=",")
 
+## convert string date into r-format date
+releaseDates$date.released <- dmy(releaseDates$date.released)
+
+moviesPerYear <- movies[,c('year','title')]
+moviesPerYear <- aggregate(. ~year, moviesPerYear, length)
+moviesPerYear <- moviesPerYear[moviesPerYear$title > 100,]
+
+moviesPerMonth <- releaseDates[,c('date.released','title')]
+moviesPerMonth$date.released <- month(moviesPerMonth$date.released) 
+moviesPerMonth <- aggregate(. ~date.released, moviesPerMonth, length)
 
 
 #SHINY DASHBOARD:
@@ -51,7 +61,7 @@ ui <- dashboardPage(
   #Body
   dashboardBody(
     
-    dark_theme_mod,  # dark theme
+    #dark_theme_mod,  # dark theme
     
     
     
@@ -133,13 +143,25 @@ server <- function(input, output, session) {
   
   
   output$genreBarGraph <- renderPlot({
-    
     ggplot(data=genres, aes(x=genre)) + 
       labs(x="Genre", y = "Number of Occurences") + 
       geom_bar(stat="count", width=0.7, fill="steelblue") +
       theme(axis.text.x=element_text(angle=55, hjust=1)) +
       scale_y_continuous(breaks= seq(0,150000,25000))
   }) # End bargraph3 
+  
+  
+  output$yearBarGraph <- renderPlot({
+    ggplot(data=moviesPerYear, aes(x=year,y=title)) +
+      geom_bar(stat="identity")
+  })
+  
+  output$monthBarGraph <- renderPlot({
+    ggplot(data=moviesPerMonth, aes(x=date.released,y=title)) +
+      coord_cartesian(ylim = c(40000,85000)) +
+      geom_bar(stat="identity")
+  })
+  
   
   
   
