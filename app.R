@@ -37,6 +37,8 @@ moviesPerMonth <- releaseDates[,c('date.released','title')]
 moviesPerMonth$date.released <- month(moviesPerMonth$date.released) 
 moviesPerMonth <- aggregate(. ~date.released, moviesPerMonth, length)
 
+yearRange <- range(year(releaseDates$date.released),na.rm=TRUE)
+
 
 #SHINY DASHBOARD:
 
@@ -46,11 +48,10 @@ ui <- dashboardPage(
   dashboardHeader(title = "Saturday Night at the Movies"),
   
   #Sidebar
-  dashboardSidebar(disable = FALSE, collapsed = FALSE
-                   
-      
+  dashboardSidebar(disable = FALSE, collapsed = FALSE,
     #insert inputs here
-      
+      selectInput("chooseDecade","Choose a decage",c(1990,2000)),
+      selectInput("chooseYear","Choose a year",c(1999,2000))
       
 
     
@@ -158,7 +159,7 @@ server <- function(input, output, session) {
   
   output$monthBarGraph <- renderPlot({
     ggplot(data=moviesPerMonth, aes(x=date.released,y=title)) +
-      coord_cartesian(ylim = c(40000,85000)) +
+      coord_cartesian(ylim = c(50000,85000)) +
       geom_bar(stat="identity")
   })
   
