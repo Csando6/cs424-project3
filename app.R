@@ -35,14 +35,33 @@ moviesPerYear <- moviesPerYear[moviesPerYear$title > 100,]
 
 moviesPerMonth <- releaseDates[,c('date.released','title')]
 moviesPerMonth$date.released <- month(moviesPerMonth$date.released) 
-moviesPerMonth <- aggregate(. ~date.released, moviesPerMonth, length)
+moviesPerMonthOr <- aggregate(. ~date.released, moviesPerMonth, length)
 
 yearRange <- releaseDates[,c('date.released',"title")]
 yearRange$date.released <- year(yearRange$date.released)
 yearRange <- aggregate(. ~date.released, yearRange, length)
 yearRange[1]
 
+## function
+## gets movie from releaseDates within a decade
+getMovieByDecade <- function(year){
+  decadeVar = floor(year/10)*10
+  releaseD <- releaseDates[,c('date.released','title')]
+  releaseD <- releaseD[year(releaseD$date.released) > year,]
+  releaseD <- releaseD[year(releaseD$date.released) < year+10,]
+  releaseD$date.released <- month(releaseD$date.released)
+  releaseD <- aggregate(. ~date.released, releaseD, length)
+  releaseD
+}
 
+## get function by year
+getMovieByYear <- function(year){
+  releaseD <- releaseDates[,c('date.released','title')]
+  releaseD <- releaseD[year(releaseD$date.released) == year,]
+  releaseD$date.released <- month(releaseD$date.released)
+  releaseD <- aggregate(. ~date.released, releaseD, length)
+  releaseD
+}
 #SHINY DASHBOARD:
 
 ui <- dashboardPage(
@@ -53,12 +72,9 @@ ui <- dashboardPage(
   #Sidebar
   dashboardSidebar(disable = FALSE, collapsed = FALSE,
     #insert inputs here
-      selectInput("chooseDecade","Choose a decage",seq(1890,2030,by=10)),
-      selectInput("chooseYear","Choose a year",yearRange[,1] )
-      
-
+      selectInput("chooseDecade","Choose a decage",append("all",seq(1890,2030,by=10)), selected="all"),
+      selectInput("chooseYear","Choose a year",append("all",yearRange[,1]), selected="all")
     
-      
   ),
   
   
@@ -161,15 +177,21 @@ server <- function(input, output, session) {
   })
   
   output$monthBarGraph <- renderPlot({
+    #print(input$chooseDecade)
+    if(input$chooseDecade == "all" && input$chooseYear == "all"){
+      moviesPerMonth <- moviesPerMonthOr
+    }
+    else if(input$chooseDecade !="all"){
+      moviesPerMonth <- getMovieByDecade(as.numeric(input$chooseDecade) )
+    }
+    else{
+      moviesPerMonth <- getMovieByYear(as.numeric(input$chooseYear) )
+    }
     ggplot(data=moviesPerMonth, aes(x=date.released,y=title)) +
-      coord_cartesian(ylim = c(50000,85000)) +
+      #scale_y_continuous(limits = c(0, NA), expand = c(0,0))+
+      coord_cartesian(ylim = c(min(moviesPerMonth[,2]),max(moviesPerMonth[,2]))) +
       geom_bar(stat="identity")
   })
-  
-  
-  
-  
-  
 }#end server block
 
 shinyApp(ui = ui, server = server)  #use ui and server in shiny app
