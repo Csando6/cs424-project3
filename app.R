@@ -37,7 +37,10 @@ moviesPerMonth <- releaseDates[,c('date.released','title')]
 moviesPerMonth$date.released <- month(moviesPerMonth$date.released) 
 moviesPerMonth <- aggregate(. ~date.released, moviesPerMonth, length)
 
-yearRange <- range(year(releaseDates$date.released),na.rm=TRUE)
+yearRange <- releaseDates[,c('date.released',"title")]
+yearRange$date.released <- year(yearRange$date.released)
+yearRange <- aggregate(. ~date.released, yearRange, length)
+yearRange[1]
 
 
 #SHINY DASHBOARD:
@@ -50,8 +53,8 @@ ui <- dashboardPage(
   #Sidebar
   dashboardSidebar(disable = FALSE, collapsed = FALSE,
     #insert inputs here
-      selectInput("chooseDecade","Choose a decage",c(1990,2000)),
-      selectInput("chooseYear","Choose a year",c(1999,2000))
+      selectInput("chooseDecade","Choose a decage",seq(1890,2030,by=10)),
+      selectInput("chooseYear","Choose a year",yearRange[,1] )
       
 
     
