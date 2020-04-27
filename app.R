@@ -10,6 +10,7 @@ library(shiny)
 library(shinydashboard)
 #library(devtools)        #for theme
 #library(dashboardthemes) #for theme
+library(dplyr)
 library(ggplot2)
 library(lubridate)
 library(DT)
@@ -21,7 +22,7 @@ library(DT)
 #NOTE: the data file to be read here is first processed by our Python scripts.
 #READ IN THE DATA FILES:
 
-#certificates <- read.csv(file = "csvFiles/final_csvFiles/certificates-cleaned-final.csv",sep=",", header= TRUE)
+certificates <- read.csv(file = "csvFiles/final_csvFiles/certificates-cleaned-final.csv",sep=",", header= TRUE)
 genres <- read.csv(file="csvFiles/final_csvFiles/genres-cleaned-final.csv",sep=",", header=TRUE)
 
 keywords <- read.csv(file="csvFiles/final_csvFiles/keywords-movies-cleaned-final.csv",sep=",", header=TRUE)
@@ -293,7 +294,7 @@ server <- function(input, output, session) {
                    'History','Musical','War','Sci-Fi','Music','Animation','Western','Sport','Film-Noir')
     
     genresTemp <- full_join(genresTemp,genresOr)
-    ggplot(data=genresOr, aes(x=genre,y=title,fill=all))+
+    ggplot(data=genresTemp, aes(x=genre,y=title,fill=all))+
       geom_col(position = "dodge")
     #ggplot(data=genres, aes(x=genre)) + 
      # labs(x="Genre", y = "Number of Movies") +
