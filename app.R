@@ -12,6 +12,7 @@ library(devtools)        #for theme
 library(dashboardthemes) #for theme
 library(ggplot2)
 library(lubridate)
+library(DT)
 
 
 #IMPORTANT: app.R needs "dark_theme_mod.R" in the same directory to run well with the dark theme:
@@ -93,8 +94,8 @@ ui <- dashboardPage(
   dashboardSidebar(disable = FALSE, collapsed = FALSE,
                    
                    #insert inputs here
-                   selectInput("chooseDecade","Choose a decage",append("all",seq(1890,2030,by=10)), selected="all"),
-                   selectInput("chooseYear","Choose a year",append("all",yearRange[,1]), selected="all"),  
+                   # selectInput("chooseDecade","Choose a decage",append("all",seq(1890,2030,by=10)), selected="all"),
+                   # selectInput("chooseYear","Choose a year",append("all",yearRange[,1]), selected="all"),  
                    
                    sliderInput("keywordsSlider", "Show top N Keywords:",
                                min = 5, max = 20,
@@ -141,18 +142,23 @@ ui <- dashboardPage(
                    ),
                    column(4,
                           fluidRow(       
-                            box(title = "Movies by Genre", background = "black", solidHeader = TRUE, status = "primary", width= 12, height = 350,
+                            box(title = "Movies by Genre", background = "black", solidHeader = TRUE, status = "primary", width= 12, height = 410,
                                 tabsetPanel(
-                                     tabPanel("Chart", plotOutput("genreBarGraph")),
-                                     tabPanel("Table", dataTableOutput("genreTable"))
-                                     
-                                  
+                                     tabPanel("Chart", plotOutput("genreBarGraph", height = "300px")),
+                                     tabPanel("Table", dataTableOutput("genreTable", height = 250))
+
+
                                 )
                             ),
                             
-                            box(title = "Top N Keywords", background = "black", solidHeader = TRUE, status = "primary", width= 12,
+                            # box(title= "table", background = "black", solidHeader = TRUE, status = "primary", width= 12,
+                            #     dataTableOutput("genreTable", height = 350)
+                            # ),
+                            
+                              box(title = "Top N Keywords", background = "black", solidHeader = TRUE, status = "primary", width= 12,
                                 plotOutput("keywordsBarGraph", height = 350)
                             )
+                        
                           )
                    )
                    
@@ -255,12 +261,14 @@ server <- function(input, output, session) {
   output$genreTable <- DT::renderDataTable(
     
     DT::datatable({
-      genres
+      genres[c(2:4)]
     },
-    options = list(searching = TRUE, pageLength = 4, lengthChange = FALSE), 
+    options = list(searching = FALSE, pageLength = 5, lengthChange = FALSE), 
     rownames = FALSE
     )
   )
+  
+  
   
   
   
