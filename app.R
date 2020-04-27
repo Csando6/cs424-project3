@@ -22,49 +22,50 @@ source("dark_theme_mod.R") #connectz
 
 #certificates <- read.csv(file = "csvFiles/final_csvFiles/certificates-cleaned-final.csv",sep=",", header= TRUE)
 genres <- read.csv(file="csvFiles/final_csvFiles/genres-cleaned-final.csv",sep=",", header=TRUE)
-keywords <- read.csv(file="csvFiles/final_csvFiles/keywords-movies-cleaned-final.csv",sep=",", header=TRUE)
-movies <- read.csv(file="csvFiles/final_csvFiles/movies-cleaned-final.csv",sep=",",header=TRUE)
-releaseDates <- read.csv(file="csvFiles/final_csvFiles/release-dates-cleaned-final.csv",sep=",",header=TRUE)
-#runningTimes <- read.csv(file="csvFiles/final_csvFiles/running-times-cleaned-final.csv",sep=",")
 
-
-## convert string date into r-format date
-releaseDates$date.released <- dmy(releaseDates$date.released)
-
-moviesPerYear <- movies[,c('year','title')]
-moviesPerYear <- aggregate(. ~year, moviesPerYear, length)
-moviesPerYear <- moviesPerYear[moviesPerYear$title > 100,]
-
-moviesPerMonth <- releaseDates[,c('date.released','title')]
-moviesPerMonth$date.released <- month(moviesPerMonth$date.released) 
-moviesPerMonthOr <- aggregate(. ~date.released, moviesPerMonth, length)
-
-yearRange <- releaseDates[,c('date.released',"title")]
-yearRange$date.released <- year(yearRange$date.released)
-yearRange <- aggregate(. ~date.released, yearRange, length)
-yearRange[1]
-
-## function
-## gets movie from releaseDates within a decade
-getMovieByDecade <- function(year){
-  decadeVar = floor(year/10)*10
-  releaseD <- releaseDates[,c('date.released','title')]
-  releaseD <- releaseD[year(releaseD$date.released) > year,]
-  releaseD <- releaseD[year(releaseD$date.released) < year+10,]
-  releaseD$date.released <- month(releaseD$date.released)
-  releaseD <- aggregate(. ~date.released, releaseD, length)
-  releaseD
-}
-
-## get function by year
-getMovieByYear <- function(year){
-  releaseD <- releaseDates[,c('date.released','title')]
-  releaseD <- releaseD[year(releaseD$date.released) == year,]
-  releaseD$date.released <- month(releaseD$date.released)
-  releaseD <- aggregate(. ~date.released, releaseD, length)
-  releaseD
-}
-
+# keywords <- read.csv(file="csvFiles/final_csvFiles/keywords-movies-cleaned-final.csv",sep=",", header=TRUE)
+# movies <- read.csv(file="csvFiles/final_csvFiles/movies-cleaned-final.csv",sep=",",header=TRUE)
+# releaseDates <- read.csv(file="csvFiles/final_csvFiles/release-dates-cleaned-final.csv",sep=",",header=TRUE)
+# #runningTimes <- read.csv(file="csvFiles/final_csvFiles/running-times-cleaned-final.csv",sep=",")
+# 
+# 
+# ## convert string date into r-format date
+# releaseDates$date.released <- dmy(releaseDates$date.released)
+# 
+# moviesPerYear <- movies[,c('year','title')]
+# moviesPerYear <- aggregate(. ~year, moviesPerYear, length)
+# moviesPerYear <- moviesPerYear[moviesPerYear$title > 100,]
+# 
+# moviesPerMonth <- releaseDates[,c('date.released','title')]
+# moviesPerMonth$date.released <- month(moviesPerMonth$date.released) 
+# moviesPerMonthOr <- aggregate(. ~date.released, moviesPerMonth, length)
+# 
+# yearRange <- releaseDates[,c('date.released',"title")]
+# yearRange$date.released <- year(yearRange$date.released)
+# yearRange <- aggregate(. ~date.released, yearRange, length)
+# yearRange[1]
+# 
+# ## function
+# ## gets movie from releaseDates within a decade
+# getMovieByDecade <- function(year){
+#   decadeVar = floor(year/10)*10
+#   releaseD <- releaseDates[,c('date.released','title')]
+#   releaseD <- releaseD[year(releaseD$date.released) > year,]
+#   releaseD <- releaseD[year(releaseD$date.released) < year+10,]
+#   releaseD$date.released <- month(releaseD$date.released)
+#   releaseD <- aggregate(. ~date.released, releaseD, length)
+#   releaseD
+# }
+# 
+# ## get function by year
+# getMovieByYear <- function(year){
+#   releaseD <- releaseDates[,c('date.released','title')]
+#   releaseD <- releaseD[year(releaseD$date.released) == year,]
+#   releaseD$date.released <- month(releaseD$date.released)
+#   releaseD <- aggregate(. ~date.released, releaseD, length)
+#   releaseD
+# }
+# 
 #filter out remaining bad genre types:
 genres <- genres[genres$genre != 'Adult',]
 genres <- genres[genres$genre != 'Short',]
@@ -72,12 +73,12 @@ genres <- genres[genres$genre != 'Reality-TV',]
 genres <- genres[genres$genre != 'Talk-Show',]
 genres <- genres[genres$genre != 'Game-Show',]
 genres <- genres[genres$genre != 'News',]
-
-
-#keywords by frequency:
-keywordsFreq <-as.data.frame(table(keywords$keyword))
-keywordsFreq <- keywordsFreq[order(-keywordsFreq$Freq),]
-colnames(keywordsFreq) = c('keyword', 'frequency')
+# 
+# 
+# #keywords by frequency:
+# keywordsFreq <-as.data.frame(table(keywords$keyword))
+# keywordsFreq <- keywordsFreq[order(-keywordsFreq$Freq),]
+# colnames(keywordsFreq) = c('keyword', 'frequency')
 
 
 
@@ -91,13 +92,13 @@ ui <- dashboardPage(
   #Sidebar
   dashboardSidebar(disable = FALSE, collapsed = FALSE,
                    
-    #insert inputs here
-    selectInput("chooseDecade","Choose a decage",append("all",seq(1890,2030,by=10)), selected="all"),
-    selectInput("chooseYear","Choose a year",append("all",yearRange[,1]), selected="all"),  
-    
-    sliderInput("keywordsSlider", "Show top N Keywords:",
-               min = 5, max = 20,
-               value = 5)
+                   #insert inputs here
+                   selectInput("chooseDecade","Choose a decage",append("all",seq(1890,2030,by=10)), selected="all"),
+                   selectInput("chooseYear","Choose a year",append("all",yearRange[,1]), selected="all"),  
+                   
+                   sliderInput("keywordsSlider", "Show top N Keywords:",
+                               min = 5, max = 20,
+                               value = 5)
                    
                    
   ),
@@ -116,50 +117,56 @@ ui <- dashboardPage(
         
         tabPanel ( "Analysis", 
                    
-          
-          column(4,
-                
-            fluidRow(       
-              box(title = "Movies by Year", background = "black", solidHeader = TRUE, status = "primary", width= 12,
-                  plotOutput("yearBarGraph", height = 350)
-              ),
-              box(title = "Movies by Month", background = "black", solidHeader = TRUE, status = "primary", width= 12,
-                  plotOutput("monthBarGraph", height = 350)
-              )
-            )
-          ),
-          column(4,
-            fluidRow(       
-              box(title = "Movies by Running Time", background = "black", solidHeader = TRUE, status = "primary", width= 12,
-                  plotOutput("runTimeBarGraph", height = 350)
-              ),
-              box(title = "Movies by Certificate", background = "black", solidHeader = TRUE, status = "primary", width= 12,
-                  plotOutput("certificateBarGraph", height = 350)
-              )
-            )
-          ),
-          column(4,
-            fluidRow(       
-              box(title = "Movies by Genre", background = "black", solidHeader = TRUE, status = "primary", width= 12,
-                  plotOutput("genreBarGraph", height = 350)
-              ),
-              box(title = "Top N Keywords", background = "black", solidHeader = TRUE, status = "primary", width= 12,
-                  plotOutput("keywordsBarGraph", height = 350)
-              )
-            )
-          )
+                   
+                   column(4,
+                          
+                          fluidRow(       
+                            box(title = "Movies by Year", background = "black", solidHeader = TRUE, status = "primary", width= 12,
+                                plotOutput("yearBarGraph", height = 350)
+                            ),
+                            box(title = "Movies by Month", background = "black", solidHeader = TRUE, status = "primary", width= 12,
+                                plotOutput("monthBarGraph", height = 350)
+                            )
+                          )
+                   ),
+                   column(4,
+                          fluidRow(       
+                            box(title = "Movies by Running Time", background = "black", solidHeader = TRUE, status = "primary", width= 12,
+                                plotOutput("runTimeBarGraph", height = 350)
+                            ),
+                            box(title = "Movies by Certificate", background = "black", solidHeader = TRUE, status = "primary", width= 12,
+                                plotOutput("certificateBarGraph", height = 350)
+                            )
+                          )
+                   ),
+                   column(4,
+                          fluidRow(       
+                            box(title = "Movies by Genre", background = "black", solidHeader = TRUE, status = "primary", width= 12, height = 350,
+                                tabsetPanel(
+                                     tabPanel("Chart", plotOutput("genreBarGraph")),
+                                     tabPanel("Table", dataTableOutput("genreTable"))
+                                     
+                                  
+                                )
+                            ),
+                            
+                            box(title = "Top N Keywords", background = "black", solidHeader = TRUE, status = "primary", width= 12,
+                                plotOutput("keywordsBarGraph", height = 350)
+                            )
+                          )
+                   )
                    
         ),
         
         tabPanel ( "About" ,
-          
-          h2("Saturday Night at the Movies"),
-          h3("Developed By: Amber Little, Charly Sandoval, and Matt Jankowski"),
-          h4("Project 3 in CS 424 (Data Analytics / Visualization) at the University of Illinois at Chicago Spring 2020"),
-          h5("________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________"),
-          h5("* Libraries Used: "),
-          h5("* Data Source: "),
-          h5("* Created using R, RStudio, Shiny, Python, [insert theme credit here]")
+                   
+                   h2("Saturday Night at the Movies"),
+                   h3("Developed By: Amber Little, Charly Sandoval, and Matt Jankowski"),
+                   h4("Project 3 in CS 424 (Data Analytics / Visualization) at the University of Illinois at Chicago Spring 2020"),
+                   h5("________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________"),
+                   h5("* Libraries Used: "),
+                   h5("* Data Source: "),
+                   h5("* Created using R, RStudio, Shiny, Python, [insert theme credit here]")
         ) # End about tab
         
         
@@ -241,6 +248,19 @@ server <- function(input, output, session) {
       scale_y_continuous(breaks= seq(0,15000,5000))
     
   }) # End keywords bargraph
+  
+  
+  #tables:
+
+  output$genreTable <- DT::renderDataTable(
+    
+    DT::datatable({
+      genres
+    },
+    options = list(searching = TRUE, pageLength = 4, lengthChange = FALSE), 
+    rownames = FALSE
+    )
+  )
   
   
   
