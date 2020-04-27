@@ -8,15 +8,15 @@
 
 library(shiny)
 library(shinydashboard)
-library(devtools)        #for theme
-library(dashboardthemes) #for theme
+#library(devtools)        #for theme
+#library(dashboardthemes) #for theme
 library(ggplot2)
 library(lubridate)
 library(DT)
 
 
 #IMPORTANT: app.R needs "dark_theme_mod.R" in the same directory to run well with the dark theme:
-source("dark_theme_mod.R") #connectz
+#source("dark_theme_mod.R") #connectz
 
 #NOTE: the data file to be read here is first processed by our Python scripts.
 #READ IN THE DATA FILES:
@@ -30,6 +30,7 @@ runningTimes <- read.csv(file="csvFiles/final_csvFiles/running-times-cleaned-fin
 
 
 # convert string date into r-format date
+
 releaseDates$date.released <- dmy(releaseDates$date.released)
 
 moviesPerYear <- movies[,c('year','title')]
@@ -37,8 +38,10 @@ moviesPerYear <- aggregate(. ~year, moviesPerYear, length)
 moviesPerYear <- moviesPerYear[moviesPerYear$title > 100,]
 
 moviesPerMonth <- releaseDates[,c('date.released','title')]
-moviesPerMonth$date.released <- month(moviesPerMonth$date.released)
+
+moviesPerMonth$date.released <- month(moviesPerMonth$date.released) 
 moviesPerMonthOr <- aggregate(. ~date.released, moviesPerMonth, length)
+moviesPerMonthOr$all <- TRUE
 
 yearRange <- releaseDates[,c('date.released',"title")]
 yearRange$date.released <- year(yearRange$date.released)
@@ -59,11 +62,12 @@ getMovieByDecade <- function(year){
 
 ## get function by year
 getMovieByYear <- function(year){
-  releaseD <- releaseDates[,c('date.released','title')]
-  releaseD <- releaseD[year(releaseD$date.released) == year,]
-  releaseD$date.released <- month(releaseD$date.released)
-  releaseD <- aggregate(. ~date.released, releaseD, length)
-  releaseD
+
+ releaseD <- releaseDates[,c('date.released','title')]
+ releaseD <- releaseD[year(releaseD$date.released) == year,]
+ releaseD$date.released <- month(releaseD$date.released)
+ releaseD <- aggregate(. ~date.released, releaseD, length)
+ releaseD
 }
 
 #filter out remaining bad genre types:
@@ -118,21 +122,18 @@ ui <- dashboardPage(
   dashboardSidebar(disable = FALSE, collapsed = FALSE,
                    
                    #insert inputs here
-                   # selectInput("chooseDecade","Choose a decage",append("all",seq(1890,2030,by=10)), selected="all"),
-                   # selectInput("chooseYear","Choose a year",append("all",yearRange[,1]), selected="all"),  
+                   selectInput("chooseDecade","Choose a decage",append("all",seq(1890,2030,by=10)), selected="all"),
+                   selectInput("chooseYear","Choose a year",append("all",yearRange[,1]), selected="all"),  
                    
                    sliderInput("keywordsSlider", "Amount of keywords to show:",
                                min = 5, max = 20,
                                value = 5)
-                   
-                   
   ),
-  
   
   #Body
   dashboardBody(
     
-    dark_theme_mod,  # dark theme
+    #dark_theme_mod,  # dark theme
     
     
     
@@ -239,14 +240,15 @@ server <- function(input, output, session) {
     }
     else if(input$chooseDecade !="all"){
       moviesPerMonth <- getMovieByDecade(as.numeric(input$chooseDecade) )
+      moviesPerMonth <- full_join(moviesPerMonth, moviesPerMonthOr)
     }
     else{
       moviesPerMonth <- getMovieByYear(as.numeric(input$chooseYear) )
+      moviesPerMonth <- full_join(moviesPerMonth, moviesPerMonthOr)
     }
-    ggplot(data=moviesPerMonth, aes(x=date.released,y=title)) +
-      #scale_y_continuous(limits = c(0, NA), expand = c(0,0))+
-      coord_cartesian(ylim = c(min(moviesPerMonth[,2]),max(moviesPerMonth[,2]))) +
-      geom_bar(stat="identity")
+    ggplot(data=moviesPerMonth, aes(x=date.released,y=title,fill=all)) +
+      geom_col(position = "dodge")
+    
   })
   
   #genre bar graph
@@ -331,7 +333,6 @@ server <- function(input, output, session) {
     )
   )
   
-  
   output$keywordsTable <- DT::renderDataTable(
     
     DT::datatable({
@@ -365,5 +366,6 @@ server <- function(input, output, session) {
   
   
 }#end server block
+
 
 shinyApp(ui = ui, server = server)  #use ui and server in shiny app
