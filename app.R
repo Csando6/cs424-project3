@@ -21,6 +21,7 @@ library(DT)
 #NOTE: the data file to be read here is first processed by our Python scripts.
 #READ IN THE DATA FILES:
 
+<<<<<<< HEAD
 #certificates <- read.csv(file = "csvFiles/final_csvFiles/certificates-cleaned-final.csv",sep=",", header= TRUE)
 genres <- read.csv(file="csvFiles/final_csvFiles/genres-cleaned-final.csv",sep=",", header=TRUE)
 
@@ -81,7 +82,83 @@ genres <- genres[genres$genre != 'News',]
 keywordsFreq <-as.data.frame(table(keywords$keyword))
 keywordsFreq <- keywordsFreq[order(-keywordsFreq$Freq),]
 colnames(keywordsFreq) = c('keyword', 'frequency')
+=======
+certificates <- read.csv(file = "csvFiles/final_csvFiles/certificates-cleaned-final.csv",sep=",", header= TRUE)[c(2:6)]
+# genres <- read.csv(file="csvFiles/final_csvFiles/genres-cleaned-final.csv",sep=",", header=TRUE)
+# keywords <- read.csv(file="csvFiles/final_csvFiles/keywords-movies-cleaned-final.csv",sep=",", header=TRUE)
+# movies <- read.csv(file="csvFiles/final_csvFiles/movies-cleaned-final.csv",sep=",",header=TRUE)
+# releaseDates <- read.csv(file="csvFiles/final_csvFiles/release-dates-cleaned-final.csv",sep=",",header=TRUE)
+# #runningTimes <- read.csv(file="csvFiles/final_csvFiles/running-times-cleaned-final.csv",sep=",")
+# 
+# 
+# ## convert string date into r-format date
+# releaseDates$date.released <- dmy(releaseDates$date.released)
+# 
+# moviesPerYear <- movies[,c('year','title')]
+# moviesPerYear <- aggregate(. ~year, moviesPerYear, length)
+# moviesPerYear <- moviesPerYear[moviesPerYear$title > 100,]
+# 
+# moviesPerMonth <- releaseDates[,c('date.released','title')]
+# moviesPerMonth$date.released <- month(moviesPerMonth$date.released) 
+# moviesPerMonthOr <- aggregate(. ~date.released, moviesPerMonth, length)
+# 
+# yearRange <- releaseDates[,c('date.released',"title")]
+# yearRange$date.released <- year(yearRange$date.released)
+# yearRange <- aggregate(. ~date.released, yearRange, length)
+# yearRange[1]
+# 
+# ## function
+# ## gets movie from releaseDates within a decade
+# getMovieByDecade <- function(year){
+#   decadeVar = floor(year/10)*10
+#   releaseD <- releaseDates[,c('date.released','title')]
+#   releaseD <- releaseD[year(releaseD$date.released) > year,]
+#   releaseD <- releaseD[year(releaseD$date.released) < year+10,]
+#   releaseD$date.released <- month(releaseD$date.released)
+#   releaseD <- aggregate(. ~date.released, releaseD, length)
+#   releaseD
+# }
+# 
+# ## get function by year
+# getMovieByYear <- function(year){
+#   releaseD <- releaseDates[,c('date.released','title')]
+#   releaseD <- releaseD[year(releaseD$date.released) == year,]
+#   releaseD$date.released <- month(releaseD$date.released)
+#   releaseD <- aggregate(. ~date.released, releaseD, length)
+#   releaseD
+# }
+# 
+#filter out remaining bad genre types:
+# genres <- genres[genres$genre != 'Adult',]
+# genres <- genres[genres$genre != 'Short',]
+# genres <- genres[genres$genre != 'Reality-TV',]
+# genres <- genres[genres$genre != 'Talk-Show',]
+# genres <- genres[genres$genre != 'Game-Show',]
+# genres <- genres[genres$genre != 'News',]
 
+
+#keywords by frequency:
+# keywordsFreq <-as.data.frame(table(keywords$keyword))
+# keywordsFreq <- keywordsFreq[order(-keywordsFreq$Freq),]
+# colnames(keywordsFreq) = c('keyword', 'frequency')
+>>>>>>> 8e1cea67177abf6cdc81d7a1462fa4a6e4d5179e
+
+
+#certificates:
+certificates <- certificates[certificates$rating != '(Banned)',]
+certificates <- certificates[certificates$rating != '12',]
+certificates <- certificates[certificates$rating != 'AO',]
+certificates <- certificates[certificates$rating != 'GA',]
+certificates <- certificates[certificates$rating != 'Open',]
+
+#era column: 1 = pre-1968 scale, 2 = post-1968 scale (with some exceptions)
+certificates$era[certificates$rating == 'Approved'] <- 1
+certificates$era[certificates$rating == 'Passed'] <- 1
+certificates$era[certificates$rating == 'GP'] <- 1
+certificates$era[certificates$rating == 'R'] <- 2
+certificates$era[certificates$rating == 'PG'] <- 2
+certificates$era[certificates$rating == 'PG-13'] <- 2
+certificates$era[certificates$rating == 'G'] <- 2
 
 
 #SHINY DASHBOARD:
@@ -130,11 +207,17 @@ ui <- dashboardPage(
                    ),
                    column(4,
                           fluidRow(       
-                            box(title = "Movies by Running Time", background = "black", solidHeader = TRUE, status = "primary", width= 12,
-                                plotOutput("runTimeBarGraph", height = 350)
+                            box(title = "Movies by Running Time", background = "black", solidHeader = TRUE, status = "primary", width= 12, height = 410,
+                                tabsetPanel(
+                                  tabPanel("Chart", plotOutput("runtimeBarGraph", height = "300px")),
+                                  tabPanel("Table", dataTableOutput("gruntimeTable", height = 250))
+                                )
                             ),
-                            box(title = "Movies by Certificate", background = "black", solidHeader = TRUE, status = "primary", width= 12,
-                                plotOutput("certificateBarGraph", height = 350)
+                            box(title = "Movies by Certificate (USA)", background = "black", solidHeader = TRUE, status = "primary", width= 12, height = 410,
+                                tabsetPanel(
+                                  tabPanel("Chart", plotOutput("certificateBarGraph", height = "300px")),
+                                  tabPanel("Table", dataTableOutput("certificateTable", height = 250))
+                                )
                             )
                           )
                    ),
@@ -144,19 +227,15 @@ ui <- dashboardPage(
                                 tabsetPanel(
                                      tabPanel("Chart", plotOutput("genreBarGraph", height = "300px")),
                                      tabPanel("Table", dataTableOutput("genreTable", height = 250))
-
-
                                 )
                             ),
-                            
-                            # box(title= "table", background = "black", solidHeader = TRUE, status = "primary", width= 12,
-                            #     dataTableOutput("genreTable", height = 350)
-                            # ),
-                            
-                              box(title = "Top N Keywords", background = "black", solidHeader = TRUE, status = "primary", width= 12,
-                                plotOutput("keywordsBarGraph", height = 350)
+                            box(title = "Top N Keywords", background = "black", solidHeader = TRUE, status = "primary", width= 12, height = 410,
+                                tabsetPanel(
+                                  tabPanel("Chart", plotOutput("keywordsBarGraph", height = "300px")),
+                                  tabPanel("Table", dataTableOutput("keywordsTable", height = 250))
+                                )
                             )
-                        
+                            
                           )
                    )
                    
@@ -255,6 +334,21 @@ server <- function(input, output, session) {
   }) # End keywords bargraph
   
   
+  output$certificateBarGraph <- renderPlot({
+    positions <- c('Approved', 'Passed', 'GP', 'R', 'PG', 'PG-13', 'G')
+    
+    ggplot(data=certificates, aes(x=rating, fill=factor(era))) + 
+      labs(x="Rating", y = "Number of Movies") +
+      geom_bar(stat="count", width=0.7) +
+      scale_x_discrete(limits = positions) +
+      scale_fill_manual(values=c('#b0926d','darkorange'), name="time frame", labels = c("pre-1970s", "post-1970s")) +
+      theme(axis.text.x=element_text(angle=55, hjust=1)) +
+      theme(text = element_text(size = 16))  +
+      theme(plot.background = element_rect(fill = "white")) +
+      theme(panel.background = element_rect(fill = "gray85",linetype = "solid")) +
+      scale_y_continuous(breaks= seq(0,10000,2000))
+  }) # End genre bar graph  
+  
   #tables:
 
   output$genreTable <- DT::renderDataTable(
@@ -267,6 +361,22 @@ server <- function(input, output, session) {
     )
   )
   
+<<<<<<< HEAD
+=======
+  
+  output$keywordsTable <- DT::renderDataTable(
+    
+    DT::datatable({
+      topNkeywordsDF <- topNkeywordsDF()
+    },
+    options = list(searching = TRUE, pageLength = 5, lengthChange = FALSE), 
+    rownames = FALSE
+    )
+  )
+  
+  
+  
+>>>>>>> 8e1cea67177abf6cdc81d7a1462fa4a6e4d5179e
 }#end server block
 
 
