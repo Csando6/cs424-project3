@@ -68,6 +68,22 @@ getMovieByYear <- function(year){
  releaseD
 }
 
+getGenreByYear <- function(uYear){
+  genresTemp <- genres[genres$year.produced == uYear,]
+  genresTemp <- genresTemp[,c("genre","title")]
+  genresTemp <- aggregate(. ~genre, genresTemp, length)
+  genresTemp
+}
+
+getGenreByDecade <- function(uYear){
+  decadeVar = floor(uYear/10)*10
+  genresTemp <- genres[as.numeric(as.character(genres$year.produced)) > uYear,]
+  genresTemp <- genresTemp[as.numeric(as.character(genresTemp$year.produced)) <= uYear+10,]
+  genresTemp <- genresTemp[,c("genre","title")]
+  genresTemp <- aggregate(. ~genre, genresTemp, length)
+  genresTemp
+}
+
 #filter out remaining bad genre types:
 genres <- genres[genres$genre != 'Adult',]
 genres <- genres[genres$genre != 'Short',]
@@ -75,6 +91,10 @@ genres <- genres[genres$genre != 'Reality-TV',]
 genres <- genres[genres$genre != 'Talk-Show',]
 genres <- genres[genres$genre != 'Game-Show',]
 genres <- genres[genres$genre != 'News',]
+#gets genres total
+genresOr <- genres[,c("genre","title")]
+genresOr <- aggregate(. ~genre, genresOr, length)
+genresOr$all <- TRUE
 
 
 #keywords by frequency:
@@ -258,19 +278,32 @@ server <- function(input, output, session) {
   
   output$genreBarGraph <- renderPlot({
     
+    if(input$chooseDecade == "all" && input$chooseYear == "all"){
+      genresTemp <- genresOr
+    }
+    else if(input$chooseDecade !="all"){
+      genresTemp <- getGenreByDecade(as.numeric(input$chooseDecade))
+    }
+    else{
+      genresTemp <- getGenreByYear(as.numeric(input$chooseDecade))
+    }
+    
     positions <- c('Drama','Comedy','Documentary','Romance','Action','Thriller','Crime','Horror','Adventure',
                    'Family','Mystery','Fantasy','Biography',
                    'History','Musical','War','Sci-Fi','Music','Animation','Western','Sport','Film-Noir')
     
-    ggplot(data=genres, aes(x=genre)) + 
-      labs(x="Genre", y = "Number of Movies") +
-      geom_bar(stat="count", width=0.7, fill="navy") +
-      scale_x_discrete(limits = positions) +
-      theme(axis.text.x=element_text(angle=55, hjust=1)) +
-      theme(text = element_text(size = 16))  +
-      theme(plot.background = element_rect(fill = "white")) +
-      theme(panel.background = element_rect(fill = "gray85",linetype = "solid")) +
-      scale_y_continuous(breaks= seq(0,150000,25000))
+    genresTemp <- full_join(genresTemp,genresOr)
+    ggplot(data=genresOr, aes(x=genre,y=title,fill=all))+
+      geom_col(position = "dodge")
+    #ggplot(data=genres, aes(x=genre)) + 
+     # labs(x="Genre", y = "Number of Movies") +
+      #geom_bar(stat="count", width=0.7, fill="navy") +
+      #scale_x_discrete(limits = positions) +
+      #theme(axis.text.x=element_text(angle=55, hjust=1)) +
+      #theme(text = element_text(size = 16))  +
+      #theme(plot.background = element_rect(fill = "white")) +
+      #theme(panel.background = element_rect(fill = "gray85",linetype = "solid")) +
+      #scale_y_continuous(breaks= seq(0,150000,25000))
   }) # End genre bar graph
   
   
