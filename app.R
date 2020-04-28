@@ -8,12 +8,12 @@
 
 library(shiny)
 library(shinydashboard)
-#library(devtools)        #for theme
-#library(dashboardthemes) #for theme
+library(devtools)        #for theme
+library(dashboardthemes) #for theme
 library(ggplot2)
 library(lubridate)
 library(DT)
-
+library(dplyr)
 
 #IMPORTANT: app.R needs "dark_theme_mod.R" in the same directory to run well with the dark theme:
 #source("dark_theme_mod.R") #connectz
@@ -39,7 +39,7 @@ moviesPerYear <- moviesPerYear[moviesPerYear$title > 100,]
 
 moviesPerMonth <- releaseDates[,c('date.released','title')]
 
-moviesPerMonth$date.released <- month(moviesPerMonth$date.released) 
+moviesPerMonth$date.released <- month(moviesPerMonth$date.released)
 moviesPerMonthOr <- aggregate(. ~date.released, moviesPerMonth, length)
 moviesPerMonthOr$all <- TRUE
 
@@ -48,8 +48,8 @@ yearRange$date.released <- year(yearRange$date.released)
 yearRange <- aggregate(. ~date.released, yearRange, length)
 yearRange[1]
 
-## function
-## gets movie from releaseDates within a decade
+# function
+# gets movie from releaseDates within a decade
 getMovieByDecade <- function(year){
   decadeVar = floor(year/10)*10
   releaseD <- releaseDates[,c('date.released','title')]
@@ -69,6 +69,11 @@ getMovieByYear <- function(year){
  releaseD <- aggregate(. ~date.released, releaseD, length)
  releaseD
 }
+
+
+averageMoviesPerYear = as.integer(mean(moviesPerYear$title))
+
+
 
 #filter out remaining bad genre types:
 genres <- genres[genres$genre != 'Adult',]
@@ -110,20 +115,24 @@ runningTimes$timerange[runningTimes$time.min >=110 & runningTimes$time.min <=119
 runningTimes$timerange[runningTimes$time.min >=120 & runningTimes$time.min <=129] <- '120-129'
 runningTimes$timerange[runningTimes$time.min >=130] <- '130+'
 
+averageRunningTime = as.integer(mean(runningTimes$time.min))
+maxRunningTime = max(runningTimes$time.min)/60
+
+
 
 #SHINY DASHBOARD:
 
 ui <- dashboardPage(
   
   #Header
-  dashboardHeader(title = "Saturday Night at the Movies"),
+  dashboardHeader(title = "Movies Dashboard"),
   
   #Sidebar
   dashboardSidebar(disable = FALSE, collapsed = FALSE,
                    
                    #insert inputs here
-                   selectInput("chooseDecade","Choose a decage",append("all",seq(1890,2030,by=10)), selected="all"),
-                   selectInput("chooseYear","Choose a year",append("all",yearRange[,1]), selected="all"),  
+                   # selectInput("chooseDecade","Choose a decage",append("all",seq(1890,2030,by=10)), selected="all"),
+                   # selectInput("chooseYear","Choose a year",append("all",yearRange[,1]), selected="all"),  
                    
                    sliderInput("keywordsSlider", "Amount of keywords to show:",
                                min = 5, max = 20,
@@ -133,7 +142,7 @@ ui <- dashboardPage(
   #Body
   dashboardBody(
     
-    #dark_theme_mod,  # dark theme
+    dark_theme_mod,  # dark theme
     
     
     
@@ -146,12 +155,19 @@ ui <- dashboardPage(
                    
                    column(4,
                           
-                          fluidRow(       
-                            box(title = "Movies by Year", background = "black", solidHeader = TRUE, status = "primary", width= 12,
-                                plotOutput("yearBarGraph", height = 350)
+                          fluidRow(  
+                            box(title = "Movies by Year", background = "black", solidHeader = TRUE, status = "primary", width= 12, height = 410,
+                                tabsetPanel(
+                                  tabPanel("Chart", plotOutput("yearBarGraph", height = "300px")),
+                                  tabPanel("Table", dataTableOutput("yearTable", height = 250)),
+                                  tabPanel("Stats", infoBoxOutput("averageYearInfoBox", width = 80))
+                                )
                             ),
-                            box(title = "Movies by Month", background = "black", solidHeader = TRUE, status = "primary", width= 12,
-                                plotOutput("monthBarGraph", height = 350)
+                            box(title = "Movies by Month", background = "black", solidHeader = TRUE, status = "primary", width= 12, height = 410,
+                                tabsetPanel(
+                                  tabPanel("Chart", plotOutput("monthBarGraph", height = "300px")),
+                                  tabPanel("Table", dataTableOutput("monthTable", height = 250))
+                                )
                             )
                           )
                    ),
@@ -160,7 +176,14 @@ ui <- dashboardPage(
                             box(title = "Movies by Running Time", background = "black", solidHeader = TRUE, status = "primary", width= 12, height = 410,
                                 tabsetPanel(
                                   tabPanel("Chart", plotOutput("runtimeBarGraph", height = "300px")),
-                                  tabPanel("Table", dataTableOutput("runtimeTable", height = 250))
+                                  tabPanel("Table", dataTableOutput("runtimeTable", height = 250)),
+                                  tabPanel("Stats", 
+                                           fluidRow(
+                                                    infoBoxOutput("averageRuntimeInfoBox", width = 80),
+                                                    infoBoxOutput("maxRuntimeInfoBox", width = 80)
+                                           )
+                                           
+                                  )
                                 )
                             ),
                             box(title = "Movies by Certificate (USA)", background = "black", solidHeader = TRUE, status = "primary", width= 12, height = 410,
@@ -195,11 +218,30 @@ ui <- dashboardPage(
                    
                    h2("Saturday Night at the Movies"),
                    h3("Developed By: Amber Little, Charly Sandoval, and Matt Jankowski"),
-                   h4("Project 3 in CS 424 (Data Analytics / Visualization) at the University of Illinois at Chicago Spring 2020"),
+                   h4("Project 3 in CS 424 (Data Analytics / Visualization) at the University of Illinois at Chicago, Spring 2020"),
                    h5("________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________"),
-                   h5("* Libraries Used: "),
-                   h5("* Data Source: "),
-                   h5("* Created using R, RStudio, Shiny, Python, [insert theme credit here]")
+                   h5("This project is an interactive visualization of the information related to genres and plot keywords in films over 100 years. You can overview a single year, or a decade.
+                             You also have the ability to look at a graphical reprentation or tabular version of your selections. Additionally, you can see data of running times, genres, and the top number 'N'
+                             keywords. Lastly, you can see all of this data side by side to adequatley analyze the data"),
+                   h5("________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________"),
+                   h5("Note: This project implements an interactive display/analysis of a dataset of films released in the United States dating back several years. Movie ratings have changed over
+                             the years and therefore, it is suggested that you keep this in mind when analyzing the trends of movies with respect to their ratings over the years.
+                             For effiency purposes, some TV episodes, video game/ internet enteries, movies that don't have a year, ratings with Short, Adult, Reality-TV, Talk Show, Game Show, etc.. "),                   
+                   h5("There are about 22 genres to view and analyze in this visualization."),
+                   h5("________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________"),
+                   h5("________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________"),
+                   h5("Here is a list of the certificates in the USA: "),
+                   h5("G (General Audiences) - All ages admitted."),
+                   h5("PG (Parental Guidance Suggested) - Some material may not be suitable for children."),
+                   h5("PG-13 (Parents Strongly Cautioned) - Some material may be inappropriate for children under 13."),
+                   h5("R (Restricted) - Under 17 requires accompanying parent or adult guardian."),
+                   h5("NC-17 (Adults Only) - No one 17 and under admitted."),
+                   h5("________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________"),
+                   h5("________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________"),
+                   h5("* Libraries Used: shiny, shinydashboard, devtools, dashboardthemes, ggplot2, lubridate, DT, dplyr"),
+                   h5("* Files Used: release-dates.list, running-times.list, certificates.list, genres.list, keywords.list, movies.list, ratings.list"),
+                   h5("* Data Source: IMDB Movie Database ->ftp://ftp.fu-berlin.de/pub/misc/movies/database/frozendata/ "),
+                   h5("* Created using R, RStudio, Shiny, Python, theme: https://github.com/nik01010/dashboardthemes")
         ) # End about tab
         
         
@@ -362,6 +404,46 @@ server <- function(input, output, session) {
     rownames = FALSE
     )
   )
+  
+  output$yearTable <- DT::renderDataTable(
+    
+    DT::datatable({
+      releaseDates[c(2:5)]
+    },
+    options = list(searching = FALSE, pageLength = 5, lengthChange = FALSE), 
+    rownames = FALSE
+    )
+  )
+  
+  output$monthTable <- DT::renderDataTable(
+    
+    DT::datatable({
+      moviesPerMonthOr[c(1:2)]
+    },
+    options = list(searching = FALSE, pageLength = 6, lengthChange = FALSE), 
+    rownames = FALSE
+    )
+  )
+  
+  #infoboxes:
+  output$averageRuntimeInfoBox <- renderInfoBox({
+    infoBox(
+      "Average", paste0(averageRunningTime, " minutes"), icon = icon("clock"), color = "green"
+    )
+  })
+  
+  output$maxRuntimeInfoBox <- renderInfoBox({
+    infoBox(
+      "Max", paste0(maxRunningTime, " hours"), icon = icon("clock"), color = "green"
+    )
+  })
+  
+  
+  output$averageYearInfoBox <- renderInfoBox({
+    infoBox(
+      "Average", paste0(averageMoviesPerYear, " movies per year"), icon = icon("calendar"), color = "black"
+    )
+  })
   
   
   
