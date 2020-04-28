@@ -150,9 +150,8 @@ ui <- dashboardPage(
   dashboardSidebar(disable = FALSE, collapsed = FALSE,
                    
                    #insert inputs here
-                   # selectInput("chooseDecade","Choose a decage",append("all",seq(1890,2030,by=10)), selected="all"),
-                   # selectInput("chooseYear","Choose a year",append("all",yearRange[,1]), selected="all"),  
-                   
+                   selectInput("chooseDecade","Choose a decade",append("all",seq(1890,2030,by=10)), selected="all"),
+                   selectInput("chooseYear","Choose a year",append("all",yearRange[,1]), selected="all"),
                    sliderInput("keywordsSlider", "Amount of keywords to show:",
                                min = 5, max = 20,
                                value = 5)
